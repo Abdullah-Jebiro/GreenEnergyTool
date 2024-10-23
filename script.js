@@ -131,3 +131,6 @@ function displayData(data) {
 // Event listeners
 document.getElementById("loginButton").addEventListener("click", login);
 document.getElementById("deleteButton").addEventListener("click", deleteStation);
+
+
+

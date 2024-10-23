@@ -22,6 +22,10 @@
             id="password"
             placeholder="كلمة المرور"
         />
+        <div class="toggle-password">
+          <input type="checkbox" id="togglePassword" />
+          <label for="togglePassword">إظهار كلمة المرور</label>
+      </div>
         <button id="loginButton">تسجيل الدخول</button>
     </div>
 
@@ -32,4 +36,16 @@
     </div>
 
     <script src="./script.js"></script>
+    <script>
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+
+      togglePassword.addEventListener('change', function() {
+          if (this.checked) {
+              passwordInput.type = 'text'; // Show password
+          } else {
+              passwordInput.type = 'password'; // Hide password
+          }
+      });
+  </script>
 </body>
