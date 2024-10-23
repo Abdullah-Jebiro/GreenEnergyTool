@@ -1,6 +1,6 @@
 let baseUrl = "https://localhost:5001"; // Change to production URL when needed
 let accessToken = "";
-
+let entryDate = '';
 // Function to check for stored credentials and log in if they exist
 function checkStoredCredentials() {
   const email = localStorage.getItem("email");
@@ -38,7 +38,6 @@ async function login() {
 
     document.getElementById("loginArea").style.display = "none";
     document.getElementById("deleteButton").style.display = "block";
-    fetchStations();
     fetchLatestRecord(0);
   } else {
     document.getElementById("message").textContent =
@@ -49,30 +48,6 @@ async function login() {
 // Call the function to check stored credentials when the page loads
 checkStoredCredentials();
 
-// Fetch stations from API
-async function fetchStations() {
-  const response = await fetch(`${baseUrl}/api/Stations?Category=1`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    const select = document.getElementById("stationSelect");
-    data.forEach((station) => {
-      const option = document.createElement("option");
-      option.value = station.id;
-      option.textContent = station.title;
-      select.appendChild(option);
-    });
-  } else if (response.status === 401) {
-    login(); // Attempt to log in again if unauthorized
-  } else {
-    document.getElementById("message").textContent =
-      "Failed to fetch stations.";
-  }
-}
 
 // Fetch the latest record
 async function fetchLatestRecord(stationId) {
@@ -102,7 +77,6 @@ async function deleteStation() {
   //const stationId = select.value; // Get the selected station ID
   const stationId = 0; // Get the selected station ID
 
-
   const response = await fetch(`${baseUrl}/api/StationMonitors/remove-latest`, {
     method: "DELETE",
     headers: {
@@ -114,8 +88,8 @@ async function deleteStation() {
 
   if (response.ok) {
     // Show a popup message
-    showPopup("تم الحذف", 5); // Call the function to show the popup for 10 seconds
-    fetchLatestRecord(stationId); // Fetch the latest record after deletion
+    showPopup("تم الحذف", 3); // Call the function to show the popup for 10 seconds
+    login();
   } else if (response.status === 401) {
     login(); // Attempt to log in again if unauthorized
   } else {
@@ -124,34 +98,66 @@ async function deleteStation() {
   }
 }
 
+
+
+
+// Send delete request
+async function deleteStation() {
+  const stationId = 0
+
+
+  const result = await Swal.fire({
+    title: 'هل أنت متأكد؟',
+    text: ` ${entryDate} ستقوم بحذف سجل ` ,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'نعم، احذفها!',
+    cancelButtonText: 'لا، ألغِ'
+  });
+
+  // If the user confirmed the deletion
+  if (result.isConfirmed) {
+    const response = await fetch(`${baseUrl}/api/StationMonitors/remove-latest`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ stationId: parseInt(stationId) }),
+    });
+
+    if (response.ok) {
+      // Show a success popup message
+      showPopup("تم الحذف", 3); // Show the popup for 3 seconds
+      login();
+    } else if (response.status === 401) {
+      login(); // Attempt to log in again if unauthorized
+    } else {
+      document.getElementById("message").textContent = "حدث خطأ أثناء حذف السجل.";
+    }
+  }
+}
+
+// Function to show popup message
 // Function to show popup message
 function showPopup(message, duration) {
-    const popup = document.createElement("div");
-    popup.textContent = message;
-    popup.style.position = "fixed";
-    popup.style.top = "50%"; // Center it vertically
-    popup.style.left = "50%"; // Center it horizontally
-    popup.style.transform = "translate(-50%, -50%)"; // Adjust for centering
-    popup.style.backgroundColor = "green"; // Change to desired color
-    popup.style.color = "white";
-    popup.style.padding = "20px";
-    popup.style.borderRadius = "5px";
-    popup.style.zIndex = "1000"; // Ensure it appears on top of other elements
-    popup.style.textAlign = "center"; // Center text
-    popup.style.width = "80%"; // Set width with unit
-    popup.style.height = "50%"; // Set height with unit
-    popup.style.boxSizing = "border-box"; // Include padding in width/height
-    document.body.appendChild(popup);
-  
-    // Remove the popup after the specified duration
-    setTimeout(() => {
-      document.body.removeChild(popup);
-    }, duration * 1000);
-  }
+  Swal.fire({
+    title: "تم",
+    text: message,
+    icon: "success", // or 'error', 'warning', 'info', 'question'
+    confirmButtonText: "موافق", // Only the OK button
+    timer: duration * 1000, // Auto close after duration
+    timerProgressBar: true,
+    onClose: () => {
+      clearTimeout(timer); // Clear the timer if popup is closed
+    },
+  });
+}
 
 // Display the fetched data on the page
 function displayData(data) {
   const messageDiv = document.getElementById("message");
+  entryDate = data.entryDate.replace("T"," ");
   messageDiv.innerHTML = `
       <h2 style="color: black;">بيانات السجل الأخير:</h2>
       <p style="color: black; font-size: 1.5em;">تاريخ الإدخال:</p>
@@ -170,9 +176,4 @@ function displayData(data) {
 
 // Event listeners
 document.getElementById("loginButton").addEventListener("click", login);
-document
-  .getElementById("deleteButton")
-  .addEventListener("click", deleteStation);
-document.getElementById("stationSelect").addEventListener("change", (e) => {
-  fetchLatestRecord(e.target.value);
-});
+document.getElementById("deleteButton").addEventListener("click", deleteStation);
