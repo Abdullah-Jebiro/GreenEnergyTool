@@ -1,6 +1,7 @@
 let baseUrl = "https://localhost:5001"; // Change to production URL when needed
 let accessToken = "";
 let entryDate = '';
+
 // Function to check for stored credentials and log in if they exist
 function checkStoredCredentials() {
   const email = localStorage.getItem("email");
@@ -48,17 +49,13 @@ async function login() {
 // Call the function to check stored credentials when the page loads
 checkStoredCredentials();
 
-
 // Fetch the latest record
 async function fetchLatestRecord(stationId) {
-  const response = await fetch(
-    `${baseUrl}/api/StationMonitors/latest/${stationId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  const response = await fetch(`${baseUrl}/api/StationMonitors/latest/${stationId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   if (response.ok) {
     const data = await response.json();
@@ -70,45 +67,23 @@ async function fetchLatestRecord(stationId) {
   }
 }
 
-// Send delete request
-// Send delete request
-async function deleteStation() {
-  //const select = document.getElementById("stationSelect");
-  //const stationId = select.value; // Get the selected station ID
-  const stationId = 0; // Get the selected station ID
-
-  const response = await fetch(`${baseUrl}/api/StationMonitors/remove-latest`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ stationId: parseInt(stationId) }),
+function showPopup(message, duration) {
+  Swal.fire({
+    title: "تم",
+    text: message,
+    icon: "success",
+    confirmButtonText: "موافق",
+    timer: duration * 1000,
+    timerProgressBar: true,
   });
-
-  if (response.ok) {
-    // Show a popup message
-    showPopup("تم الحذف", 3); // Call the function to show the popup for 10 seconds
-    login();
-  } else if (response.status === 401) {
-    login(); // Attempt to log in again if unauthorized
-  } else {
-    document.getElementById("message").textContent =
-      "An error occurred while deleting the record.";
-  }
 }
 
-
-
-
-// Send delete request
 async function deleteStation() {
-  const stationId = 0
-
+  const stationId = 0;
 
   const result = await Swal.fire({
     title: 'هل أنت متأكد؟',
-    text: ` ${entryDate} ستقوم بحذف سجل ` ,
+    text: `${entryDate} ستقوم بحذف سجل`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'نعم، احذفها!',
@@ -127,9 +102,8 @@ async function deleteStation() {
     });
 
     if (response.ok) {
-      // Show a success popup message
       showPopup("تم الحذف", 3); // Show the popup for 3 seconds
-      login();
+      fetchLatestRecord(0); // Refresh the latest records
     } else if (response.status === 401) {
       login(); // Attempt to log in again if unauthorized
     } else {
@@ -138,40 +112,14 @@ async function deleteStation() {
   }
 }
 
-// Function to show popup message
-// Function to show popup message
-function showPopup(message, duration) {
-  Swal.fire({
-    title: "تم",
-    text: message,
-    icon: "success", // or 'error', 'warning', 'info', 'question'
-    confirmButtonText: "موافق", // Only the OK button
-    timer: duration * 1000, // Auto close after duration
-    timerProgressBar: true,
-    onClose: () => {
-      clearTimeout(timer); // Clear the timer if popup is closed
-    },
-  });
-}
-
 // Display the fetched data on the page
 function displayData(data) {
   const messageDiv = document.getElementById("message");
-  entryDate = data.entryDate.replace("T"," ");
+  entryDate = data.entryDate.replace("T", " ");
   messageDiv.innerHTML = `
       <h2 style="color: black;">بيانات السجل الأخير:</h2>
-      <p style="color: black; font-size: 1.5em;">تاريخ الإدخال:</p>
-      <p style="color: black; font-size: 1.5em;"><strong></strong> ${data.entryDate.replace(
-        "T",
-        " "
-      )}</p>
-      
-        <p></p>
-        <p></p>
-        <p></p>
-
-
-    `;
+      <p style="color: black; font-size: 1.5em;"><strong>تاريخ الإدخال:</strong> ${entryDate}</p>
+  `;
 }
 
 // Event listeners
