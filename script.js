@@ -117,8 +117,8 @@ function displayData(data) {
   const messageDiv = document.getElementById("message");
   entryDate = data.entryDate.replace("T", " ");
   messageDiv.innerHTML = `
-      <h2 style="color: black;">بيانات السجل الأخير:</h2>
-      <p style="color: black; font-size: 1.5em;"><strong>تاريخ الإدخال:</strong> ${entryDate}</p>
+      <h2 style="color: black;">تاريخ الإدخال - بيانات السجل الأخير</h2>
+      <p style="color: black; font-size: 1.5em;"><strong></strong> ${entryDate}</p>
   `;
 }
 
