@@ -1,4 +1,4 @@
-let baseUrl = "https://localhost:5001"; // Change to production URL when needed
+let baseUrl = "http://devgreenenergy.runasp.net"; // Change to production URL when needed
 let accessToken = "";
 let entryDate = '';
 
