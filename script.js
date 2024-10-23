@@ -38,7 +38,7 @@ async function login() {
     localStorage.setItem("password", password);
 
     document.getElementById("loginArea").style.display = "none";
-    document.getElementById("deleteButton").style.display = "block";
+    document.getElementById("deleteArea").style.display = "block";
     fetchLatestRecord(0);
   } else {
     // Show an error popup message in Arabic
