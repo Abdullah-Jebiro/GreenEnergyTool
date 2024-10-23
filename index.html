@@ -1,35 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Select Station</title>
+    <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
 
-</head>
-<body>
-
-    <div class="container" id="loginArea">
-        <h2>تسجيل الدخول</h2>
-        <input
-            type="email"
-            id="email"
-            placeholder="البريد الإلكتروني"
-        />
-        <input
-            type="password"
-            id="password"
-            placeholder="كلمة المرور"
-        />
-        <button id="loginButton">تسجيل الدخول</button>
+    <div id="loginArea">
+      <input
+        type="email"
+        id="email"
+        value=""
+        placeholder="Email"
+      />
+      <input
+        type="password"
+        id="password"
+        value=""
+        placeholder="Password"
+      />
+     <div>
+      <button id="loginButton">Login</button>
+     </div>
     </div>
 
-    <div class="container" style="display: none;" id="deleteArea">
-        <h2>حذف السجل الأخير</h2>
-        <button id="deleteButton">حذف السجل الأخير</button>
-        <div class="message" id="message"></div>
-    </div>
+
+
+    <button id="deleteButton" style="display: none">
+      حذف السجل الاخير
+    </button>
+
+    <div class="message" id="message"></div>
 
     <script src="./script.js"></script>
-</body>
+  </body>
 </html>
