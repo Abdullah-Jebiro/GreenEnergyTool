@@ -41,8 +41,14 @@ async function login() {
     document.getElementById("deleteButton").style.display = "block";
     fetchLatestRecord(0);
   } else {
-    document.getElementById("message").textContent =
-      response.status === 401 ? "Unauthorized: Login failed." : "Login failed.";
+    // Show an error popup message in Arabic
+    const errorMessage = response.status === 401 ? "غير مصرح: فشل تسجيل الدخول." : "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.";
+    Swal.fire({
+      title: 'خطأ',
+      text: errorMessage,
+      icon: 'error',
+      confirmButtonText: 'موافق',
+    });
   }
 }
 
